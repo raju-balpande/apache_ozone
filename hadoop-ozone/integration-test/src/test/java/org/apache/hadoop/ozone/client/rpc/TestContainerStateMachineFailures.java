@@ -551,12 +551,14 @@ public class TestContainerStateMachineFailures {
     Assert.assertTrue(stateMachine.isStateMachineHealthy());
     LOG.info("RRR3:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
     try {
+      Thread.sleep(10000);
       stateMachine.takeSnapshot();
     } catch (IOException ioe) {
       Assert.fail("Exception should not be thrown");
     } finally {
       xceiverClientManager.releaseClient(xceiverClient, false);
     }
+    Thread.sleep(10000);
     final FileInfo latestSnapshot = getSnapshotFileInfo(storage);
     LOG.info("RRR4:" + snapshot.getPath() + "=" + latestSnapshot.getPath());
     Assert.assertFalse(snapshot.getPath().equals(latestSnapshot.getPath()));
