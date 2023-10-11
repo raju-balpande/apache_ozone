@@ -17,6 +17,9 @@
  */
 package org.apache.ratis.statemachine.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -24,9 +27,18 @@ import java.io.IOException;
  * Helper for integration test using `SimpleStateMachineStorage`.
  */
 public interface StatemachineImplTestUtil {
+
+  static final Logger LOG =
+          LoggerFactory.getLogger(StatemachineImplTestUtil.class);
   static SingleFileSnapshotInfo findLatestSnapshot(
       SimpleStateMachineStorage storage) throws IOException {
     final File dir = storage.getStateMachineDir();
+    LOG.info("RRR list:"+dir.listFiles());
+    if(dir.listFiles()!=null)
+      for (File file:dir.listFiles()) {
+        LOG.info("RRR file:"+file.getPath());
+      }
+
     return SimpleStateMachineStorage.findLatestSnapshot(dir.toPath());
   }
 }

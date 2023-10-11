@@ -100,12 +100,16 @@ import static org.junit.Assert.fail;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests the containerStateMachine failure handling.
  */
 public class TestContainerStateMachineFailures {
 
+  static final Logger LOG =
+          LoggerFactory.getLogger(TestContainerStateMachineFailures.class);
   private static MiniOzoneCluster cluster;
   private static OzoneConfiguration conf;
   private static OzoneClient client;
@@ -159,7 +163,7 @@ public class TestContainerStateMachineFailures {
     conf.setLong(OzoneConfigKeys.DFS_RATIS_SNAPSHOT_THRESHOLD_KEY, 1);
     conf.setQuietMode(false);
     cluster =
-        MiniOzoneCluster.newBuilder(conf).setNumDatanodes(10).setHbInterval(200)
+        MiniOzoneCluster.newBuilder(conf).setNumDatanodes(3).setHbInterval(200)
             .build();
     cluster.waitForClusterToBeReady();
     cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 60000);
@@ -514,6 +518,7 @@ public class TestContainerStateMachineFailures {
     SimpleStateMachineStorage storage =
             (SimpleStateMachineStorage) stateMachine.getStateMachineStorage();
     final FileInfo snapshot = getSnapshotFileInfo(storage);
+    Assert.assertNotNull(snapshot);
     final Path parentPath = snapshot.getPath();
     stateMachine.takeSnapshot();
     Assert.assertTrue(parentPath.getParent().toFile().listFiles().length > 0);
@@ -530,11 +535,13 @@ public class TestContainerStateMachineFailures {
     request.setContainerID(containerID);
     request.setCloseContainer(
             ContainerProtos.CloseContainerRequestProto.getDefaultInstance());
+    LOG.info("RRR1:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
     try {
       xceiverClient.sendCommand(request.build());
     } catch (IOException e) {
       Assert.fail("Exception should not be thrown");
     }
+    LOG.info("RRR2:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
     Assert.assertTrue(
             TestHelper.getDatanodeService(omKeyLocationInfo, cluster)
                     .getDatanodeStateMachine()
@@ -542,6 +549,7 @@ public class TestContainerStateMachineFailures {
                     .getContainerState()
                     == ContainerProtos.ContainerDataProto.State.CLOSED);
     Assert.assertTrue(stateMachine.isStateMachineHealthy());
+    LOG.info("RRR3:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
     try {
       stateMachine.takeSnapshot();
     } catch (IOException ioe) {
@@ -550,7 +558,9 @@ public class TestContainerStateMachineFailures {
       xceiverClientManager.releaseClient(xceiverClient, false);
     }
     final FileInfo latestSnapshot = getSnapshotFileInfo(storage);
+    LOG.info("RRR4:" + snapshot.getPath() + "=" + latestSnapshot.getPath());
     Assert.assertFalse(snapshot.getPath().equals(latestSnapshot.getPath()));
+    FileUtil.fullyDelete(latestSnapshot.getPath().toFile().getParentFile());
   }
 
   // The test injects multiple write chunk requests along with closed container
