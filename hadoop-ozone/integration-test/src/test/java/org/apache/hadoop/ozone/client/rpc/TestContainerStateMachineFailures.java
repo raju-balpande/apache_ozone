@@ -74,6 +74,7 @@ import org.apache.hadoop.ozone.om.helpers.OmKeyInfo;
 import org.apache.hadoop.ozone.om.helpers.OmKeyLocationInfo;
 import org.apache.hadoop.ozone.protocol.commands.CloseContainerCommand;
 import org.apache.hadoop.ozone.protocol.commands.SCMCommand;
+import org.apache.ozone.test.GenericTestUtils;
 import org.apache.ozone.test.LambdaTestUtils;
 import org.apache.ozone.test.tag.Flaky;
 
@@ -92,6 +93,7 @@ import org.apache.ratis.server.storage.FileInfo;
 import org.apache.ratis.statemachine.impl.SimpleStateMachineStorage;
 import static org.hamcrest.core.Is.is;
 
+import org.apache.ratis.statemachine.impl.SingleFileSnapshotInfo;
 import org.apache.ratis.statemachine.impl.StatemachineImplTestUtil;
 import org.apache.ratis.thirdparty.com.google.protobuf.ByteString;
 import org.junit.Assert;
@@ -517,6 +519,7 @@ public class TestContainerStateMachineFailures {
                     omKeyLocationInfo.getPipeline());
     SimpleStateMachineStorage storage =
             (SimpleStateMachineStorage) stateMachine.getStateMachineStorage();
+    long markStage1 = StatemachineImplTestUtil.findLatestSnapshot(storage).getIndex();
     final FileInfo snapshot = getSnapshotFileInfo(storage);
     Assert.assertNotNull(snapshot);
     final Path parentPath = snapshot.getPath();
@@ -551,17 +554,26 @@ public class TestContainerStateMachineFailures {
     Assert.assertTrue(stateMachine.isStateMachineHealthy());
     LOG.info("RRR3:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
     try {
-      Thread.sleep(5000);
       stateMachine.takeSnapshot();
+      Thread.sleep(5000);
     } catch (IOException ioe) {
       Assert.fail("Exception should not be thrown");
     } finally {
       xceiverClientManager.releaseClient(xceiverClient, false);
     }
+    // This is just an attempt to wait for an asynchronous call to updateIncreasingly to finish
+    // as part of "HDDS-6115"
+    GenericTestUtils.waitFor((() -> {
+      try {
+        return markStage1 == StatemachineImplTestUtil.findLatestSnapshot(storage).getIndex();
+      } catch (IOException e) {
+        return true;
+      }
+    }), 1000, 20000);
+
     final FileInfo latestSnapshot = getSnapshotFileInfo(storage);
     LOG.info("RRR4:" + snapshot.getPath() + "=" + latestSnapshot.getPath());
     Assert.assertFalse(snapshot.getPath().equals(latestSnapshot.getPath()));
-    FileUtil.fullyDelete(latestSnapshot.getPath().toFile().getParentFile());
   }
 
   // The test injects multiple write chunk requests along with closed container
