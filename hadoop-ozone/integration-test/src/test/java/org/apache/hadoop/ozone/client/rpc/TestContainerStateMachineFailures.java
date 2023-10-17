@@ -564,10 +564,16 @@ public class TestContainerStateMachineFailures {
     // as part of "HDDS-6115"
     try {
         GenericTestUtils.waitFor((() -> {
+          try {
             return markStage1 != StatemachineImplTestUtil.findLatestSnapshot(storage).getIndex();
+          } catch (IOException e) {
+            LOG.info("RRR41:Waiting terminated for updateIncreasingly term index");
+            // No action needed. The test case is going to fail at assertion.
+            return true;
+          }
         }), 1000, 20000);
     } catch (Exception e) {
-      LOG.info("RRR4:Waiting time over for updateIncreasingly term index");
+      LOG.info("RRR42:Waiting time over for updateIncreasingly term index");
       // No action needed. The test case is going to fail at assertion.
     }
 
