@@ -33,12 +33,6 @@ public interface StatemachineImplTestUtil {
   static SingleFileSnapshotInfo findLatestSnapshot(
       SimpleStateMachineStorage storage) throws IOException {
     final File dir = storage.getStateMachineDir();
-    LOG.info("RRR list:"+dir.listFiles());
-    if(dir.listFiles()!=null)
-      for (File file:dir.listFiles()) {
-        LOG.info("RRR file:"+file.getPath());
-      }
-
     return SimpleStateMachineStorage.findLatestSnapshot(dir.toPath());
   }
 }

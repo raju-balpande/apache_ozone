@@ -552,10 +552,9 @@ public class TestContainerStateMachineFailures {
                     .getContainerState()
                     == ContainerProtos.ContainerDataProto.State.CLOSED);
     Assert.assertTrue(stateMachine.isStateMachineHealthy());
-    LOG.info("RRR3:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
+    LOG.info("RRR33:" + snapshot.getPath() + "=" + getSnapshotFileInfo(storage).getPath());
     try {
       stateMachine.takeSnapshot();
-      Thread.sleep(5000);
     } catch (IOException ioe) {
       Assert.fail("Exception should not be thrown");
     } finally {
@@ -572,7 +571,7 @@ public class TestContainerStateMachineFailures {
     }), 1000, 20000);
 
     final FileInfo latestSnapshot = getSnapshotFileInfo(storage);
-    LOG.info("RRR4:" + snapshot.getPath() + "=" + latestSnapshot.getPath());
+    LOG.info("RRR44:" + snapshot.getPath() + "=" + latestSnapshot.getPath());
     Assert.assertFalse(snapshot.getPath().equals(latestSnapshot.getPath()));
   }
 
