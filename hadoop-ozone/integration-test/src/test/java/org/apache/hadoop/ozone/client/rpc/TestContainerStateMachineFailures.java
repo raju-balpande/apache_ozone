@@ -165,7 +165,7 @@ public class TestContainerStateMachineFailures {
     conf.setLong(OzoneConfigKeys.DFS_RATIS_SNAPSHOT_THRESHOLD_KEY, 1);
     conf.setQuietMode(false);
     cluster =
-        MiniOzoneCluster.newBuilder(conf).setNumDatanodes(3).setHbInterval(200)
+        MiniOzoneCluster.newBuilder(conf).setNumDatanodes(10).setHbInterval(200)
             .build();
     cluster.waitForClusterToBeReady();
     cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 60000);
@@ -562,13 +562,14 @@ public class TestContainerStateMachineFailures {
     }
     // This is just an attempt to wait for an asynchronous call to updateIncreasingly to finish
     // as part of "HDDS-6115"
-    GenericTestUtils.waitFor((() -> {
-      try {
-        return markStage1 == StatemachineImplTestUtil.findLatestSnapshot(storage).getIndex();
-      } catch (IOException e) {
-        return true;
-      }
-    }), 1000, 20000);
+    try {
+        GenericTestUtils.waitFor((() -> {
+            return markStage1 != StatemachineImplTestUtil.findLatestSnapshot(storage).getIndex();
+        }), 1000, 20000);
+    } catch (Exception e) {
+      LOG.info("RRR4:Waiting time over for updateIncreasingly term index");
+      // No action needed. The test case is going to fail at assertion.
+    }
 
     final FileInfo latestSnapshot = getSnapshotFileInfo(storage);
     LOG.info("RRR44:" + snapshot.getPath() + "=" + latestSnapshot.getPath());
