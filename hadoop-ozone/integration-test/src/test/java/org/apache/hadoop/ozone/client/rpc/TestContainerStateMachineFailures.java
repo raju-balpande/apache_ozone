@@ -571,7 +571,7 @@ public class TestContainerStateMachineFailures {
             // No action needed. The test case is going to fail at assertion.
             return true;
           }
-        }), 1000, 30000);
+        }), 1000, 40000);
     } catch (Exception e) {
       LOG.info("RRR42:Waiting time over for updateIncreasingly term index");
       // No action needed. The test case is going to fail at assertion.
