@@ -23,7 +23,7 @@ import org.apache.hadoop.util.CrcComposer;
 import org.apache.hadoop.util.CrcUtil;
 import org.apache.hadoop.util.DataChecksum;
 import org.apache.ratis.thirdparty.com.google.protobuf.ByteString;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

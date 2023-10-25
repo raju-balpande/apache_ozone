@@ -44,14 +44,13 @@ import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_CLIENT_ADDRESS_
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_CLIENT_PORT_DEFAULT;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_CLIENT_PORT_KEY;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_NAMES;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
@@ -66,17 +65,14 @@ public class TestHddsClientUtils {
   @Rule
   public TestRule timeout = new JUnit5AwareTimeout(Timeout.seconds(300));
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   /**
    * Verify client endpoint lookup failure if it is not configured.
    */
   @Test
   public void testMissingScmClientAddress() {
     final OzoneConfiguration conf = new OzoneConfiguration();
-    thrown.expect(ConfigurationException.class);
-    HddsUtils.getScmAddressForClients(conf);
+    //thrown.expect(ConfigurationException.class);
+    Assertions.assertThrows(ConfigurationException.class, ()->HddsUtils.getScmAddressForClients(conf));
   }
 
   /**
@@ -125,8 +121,8 @@ public class TestHddsClientUtils {
     port = 9880;
 
     for (InetSocketAddress scmAddr : scmClientAddr) {
-      assertEquals(scmAddr.getHostName(), "localhost");
-      assertEquals(scmAddr.getPort(), port++);
+      Assertions.assertEquals(scmAddr.getHostName(), "localhost");
+      Assertions.assertEquals(scmAddr.getPort(), port++);
     }
 
   }
@@ -135,7 +131,7 @@ public class TestHddsClientUtils {
       int port) {
     Iterator<InetSocketAddress> scmAddrIterator =
         HddsUtils.getScmAddressForClients(conf).iterator();
-    Assert.assertTrue(scmAddrIterator.hasNext());
+    Assertions.assertTrue(scmAddrIterator.hasNext());
     InetSocketAddress scmAddr = scmAddrIterator.next();
     assertThat(scmAddr.getHostString(), is(address));
     assertThat(scmAddr.getPort(), is(port));
@@ -175,8 +171,8 @@ public class TestHddsClientUtils {
     conf.set(OZONE_SCM_CLIENT_ADDRESS_KEY, scmHost);
     final InetSocketAddress address = NetUtils.createSocketAddr(
         SCMNodeInfo.buildNodeInfo(conf).get(0).getBlockClientAddress());
-    assertEquals(scmHost, address.getHostName());
-    assertEquals(OZONE_SCM_BLOCK_CLIENT_PORT_DEFAULT, address.getPort());
+    Assertions.assertEquals(scmHost, address.getHostName());
+    Assertions.assertEquals(OZONE_SCM_BLOCK_CLIENT_PORT_DEFAULT, address.getPort());
   }
 
   @Test
@@ -190,8 +186,8 @@ public class TestHddsClientUtils {
         HddsUtils.getScmAddressForClients(conf);
     Assert.assertTrue(address.iterator().hasNext());
     InetSocketAddress socketAddress = address.iterator().next();
-    assertEquals(scmHost, socketAddress.getHostName());
-    assertEquals(OZONE_SCM_CLIENT_PORT_DEFAULT, socketAddress.getPort());
+    Assertions.assertEquals(scmHost, socketAddress.getHostName());
+    Assertions.assertEquals(OZONE_SCM_CLIENT_PORT_DEFAULT, socketAddress.getPort());
   }
 
   @Test
@@ -209,9 +205,9 @@ public class TestHddsClientUtils {
         HddsUtils.getScmAddressForClients(conf);
     Assert.assertTrue(address.iterator().hasNext());
     InetSocketAddress socketAddress = address.iterator().next();
-    assertEquals(scmHost.split(":")[0],
+    Assertions.assertEquals(scmHost.split(":")[0],
         socketAddress.getHostName());
-    assertEquals(OZONE_SCM_CLIENT_PORT_DEFAULT, socketAddress.getPort());
+    Assertions.assertEquals(OZONE_SCM_CLIENT_PORT_DEFAULT, socketAddress.getPort());
   }
 
   @Test
@@ -227,8 +223,8 @@ public class TestHddsClientUtils {
     conf.set(OZONE_SCM_CLIENT_ADDRESS_KEY, scmHost);
     final InetSocketAddress address = NetUtils.createSocketAddr(
         SCMNodeInfo.buildNodeInfo(conf).get(0).getBlockClientAddress());
-    assertEquals(scmHost.split(":")[0], address.getHostName());
-    assertEquals(OZONE_SCM_BLOCK_CLIENT_PORT_DEFAULT, address.getPort());
+    Assertions.assertEquals(scmHost.split(":")[0], address.getHostName());
+    Assertions.assertEquals(OZONE_SCM_BLOCK_CLIENT_PORT_DEFAULT, address.getPort());
   }
 
   @Test
@@ -266,7 +262,7 @@ public class TestHddsClientUtils {
     for (String name : invalidNames) {
       try {
         HddsClientUtils.verifyResourceName(name);
-        fail("Did not reject invalid string [" + name + "] as a name");
+        Assertions.fail("Did not reject invalid string [" + name + "] as a name");
       } catch (IllegalArgumentException e) {
         // throwing up on an invalid name. we're good
       }
@@ -295,7 +291,7 @@ public class TestHddsClientUtils {
     for (String name : invalidNames) {
       try {
         HddsClientUtils.verifyKeyName(name);
-        fail("Did not reject invalid string [" + name + "] as a name");
+        Assertions.fail("Did not reject invalid string [" + name + "] as a name");
       } catch (IllegalArgumentException e) {
         // throwing up on an invalid name. it's working.
       }
@@ -325,7 +321,7 @@ public class TestHddsClientUtils {
         // not throwing up on a valid name. it's working.
       } catch (IllegalArgumentException e) {
         // throwing up on an valid name. it's not working.
-        fail("Rejected valid string [" + name + "] as a name");
+        Assertions.fail("Rejected valid string [" + name + "] as a name");
       }
     }
   }
