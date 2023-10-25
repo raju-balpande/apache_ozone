@@ -51,7 +51,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.apache.ozone.test.JUnit5AwareTimeout;
@@ -68,11 +67,17 @@ public class TestHddsClientUtils {
   /**
    * Verify client endpoint lookup failure if it is not configured.
    */
-  @Test
+  @Test(timeout = 3000)
   public void testMissingScmClientAddress() {
     final OzoneConfiguration conf = new OzoneConfiguration();
     //thrown.expect(ConfigurationException.class);
-    Assertions.assertThrows(ConfigurationException.class, ()->HddsUtils.getScmAddressForClients(conf));
+    try {
+      Thread.sleep(4000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    Assertions.assertThrows(ConfigurationException.class,
+            () -> HddsUtils.getScmAddressForClients(conf));
   }
 
   /**

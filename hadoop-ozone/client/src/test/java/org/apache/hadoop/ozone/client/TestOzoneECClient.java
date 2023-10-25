@@ -23,7 +23,6 @@ import org.apache.hadoop.hdds.client.BlockID;
 import org.apache.hadoop.hdds.client.DefaultReplicationConfig;
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfigValidator;
-import org.apache.hadoop.hdds.conf.ConfigurationException;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
@@ -52,10 +51,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -692,7 +687,7 @@ public class TestOzoneECClient {
     }
     // Mocked MultiNodePipelineBlockAllocator#allocateBlock implementation can
     // not pick new block group as all nodes in cluster marked as bad.
-    Assertions.assertThrows(IllegalStateException.class, ()->
+    Assertions.assertThrows(IllegalStateException.class, () ->
             testStripeWriteRetriesOnFailures(con, clusterSize,
         nodesIndexesToMarkFailure));
   }
