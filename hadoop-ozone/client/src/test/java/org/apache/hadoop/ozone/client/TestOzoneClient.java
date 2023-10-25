@@ -126,7 +126,8 @@ public class TestOzoneClient {
         .build();
     store.createVolume(volumeName, volumeArgs);
     OzoneVolume volume = store.getVolume(volumeName);
-    Assertions.assertEquals(OzoneConsts.QUOTA_RESET, volume.getQuotaInNamespace());
+    Assertions.assertEquals(OzoneConsts.QUOTA_RESET,
+            volume.getQuotaInNamespace());
     Assertions.assertEquals(OzoneConsts.QUOTA_RESET, volume.getQuotaInBytes());
     Assertions.assertEquals("val1", volume.getMetadata().get("key1"));
     Assertions.assertEquals(volumeName, volume.getName());

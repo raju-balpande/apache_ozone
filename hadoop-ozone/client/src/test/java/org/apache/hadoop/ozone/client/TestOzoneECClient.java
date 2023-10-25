@@ -342,7 +342,8 @@ public class TestOzoneECClient {
         keyLocations.getBlockID().getContainerBlockID().getContainerID(),
         keyLocations.getBlockID().getContainerBlockID().getLocalID()));
 
-    Assertions.assertArrayEquals(firstSmallChunk, firstBlockData.getBytes(UTF_8));
+    Assertions.assertArrayEquals(firstSmallChunk,
+            firstBlockData.getBytes(UTF_8));
 
     final ByteBuffer[] dataBuffers = new ByteBuffer[dataBlocks];
     dataBuffers[0] = ByteBuffer.wrap(firstSmallChunk);
@@ -648,8 +649,8 @@ public class TestOzoneECClient {
         nodesIndexesToMarkFailure);
     // It should have used 3rd block group also. So, total initialized nodes
     // count should be clusterSize.
-    Assertions.assertTrue(((MockXceiverClientFactory) factoryStub).getStorages()
-        .size() == clusterSize);
+    Assertions.assertTrue(((MockXceiverClientFactory) factoryStub)
+        .getStorages().size() == clusterSize);
   }
 
   @Test
@@ -669,8 +670,8 @@ public class TestOzoneECClient {
         nodesIndexesToMarkFailure);
     // It should have used 3rd block group also. So, total initialized nodes
     // count should be clusterSize.
-    Assertions.assertTrue(((MockXceiverClientFactory) factoryStub).getStorages()
-        .size() == clusterSize);
+    Assertions.assertTrue(((MockXceiverClientFactory) factoryStub)
+        .getStorages().size() == clusterSize);
   }
 
   // The mocked impl throws IllegalStateException when there are not enough
@@ -712,12 +713,12 @@ public class TestOzoneECClient {
       // OZONE_CLIENT_MAX_EC_STRIPE_WRITE_RETRIES_ON_FAILURE(here it was
       // configured as 3). So, it should fail as we have marked 3 nodes as bad.
       testStripeWriteRetriesOnFailures(con, 20, nodesIndexesToMarkFailure);
-      Assertions.fail(
-          "Expecting it to fail as retries should exceed the max allowed times:"
-              + " " + 3);
+      Assertions.fail("Expecting it to fail as retries should exceed " +
+          "the max allowed times: " + 3);
     } catch (IOException e) {
-      Assertions.assertEquals("Completed max allowed retries 3 on stripe failures.",
-          e.getMessage());
+      Assertions.assertEquals(
+          "Completed max allowed retries 3 on stripe failures."
+          , e.getMessage());
     }
   }
 
@@ -1048,10 +1049,9 @@ public class TestOzoneECClient {
       }
 
       byte[] partialChunkToRead = new byte[partialChunkSize];
-      Assertions
-          .assertEquals(partialChunkToRead.length, is.read(partialChunkToRead));
+      Assertions.assertEquals(
+          partialChunkToRead.length, is.read(partialChunkToRead));
       Assertions.assertTrue(Arrays.equals(partialChunk, partialChunkToRead));
-
       Assertions.assertEquals(-1, is.read(partialChunkToRead));
     }
   }
@@ -1153,7 +1153,7 @@ public class TestOzoneECClient {
         Assertions.assertArrayEquals(inputChunks[i % dataBlocks], fileContent,
             "Expected: " + new String(inputChunks[i % dataBlocks], UTF_8)
                 + " \n " + "Actual: " + new String(fileContent, UTF_8)
-            );
+        );
       }
     }
   }
