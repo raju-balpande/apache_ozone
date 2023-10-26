@@ -717,8 +717,8 @@ public class TestOzoneECClient {
           "the max allowed times: " + 3);
     } catch (IOException e) {
       Assertions.assertEquals(
-          "Completed max allowed retries 3 on stripe failures."
-          , e.getMessage());
+          "Completed max allowed retries 3 on stripe failures.",
+          e.getMessage());
     }
   }
 
