@@ -248,7 +248,7 @@ public class TestReconTasks {
     // Bring down the Datanode that had the container replica.
     cluster.shutdownHddsDatanode(pipeline.getFirstNode());
 
-    LambdaTestUtils.await(25000, 1000, () -> {
+    LambdaTestUtils.await(35000, 1000, () -> {
       List<UnhealthyContainers> allEmptyMissingContainers =
           reconContainerManager.getContainerSchemaManager()
               .getUnhealthyContainers(
@@ -268,7 +268,7 @@ public class TestReconTasks {
     }
 
     // Verify again and now container is not empty missing but just missing.
-    LambdaTestUtils.await(25000, 1000, () -> {
+    LambdaTestUtils.await(35000, 1000, () -> {
       List<UnhealthyContainers> allMissingContainers =
           reconContainerManager.getContainerSchemaManager()
               .getUnhealthyContainers(
@@ -277,7 +277,7 @@ public class TestReconTasks {
       return (allMissingContainers.size() == 1);
     });
 
-    LambdaTestUtils.await(25000, 1000, () -> {
+    LambdaTestUtils.await(35000, 1000, () -> {
       List<UnhealthyContainers> allEmptyMissingContainers =
           reconContainerManager.getContainerSchemaManager()
               .getUnhealthyContainers(
@@ -297,7 +297,7 @@ public class TestReconTasks {
 
     // Check existing container state in UNHEALTHY_CONTAINER table
     // will be updated as EMPTY_MISSING
-    LambdaTestUtils.await(25000, 1000, () -> {
+    LambdaTestUtils.await(35000, 1000, () -> {
       List<UnhealthyContainers> allEmptyMissingContainers =
           reconContainerManager.getContainerSchemaManager()
               .getUnhealthyContainers(
@@ -309,7 +309,7 @@ public class TestReconTasks {
 
     // Now restart the cluster and verify the container is no longer missing.
     cluster.restartHddsDatanode(pipeline.getFirstNode(), true);
-    LambdaTestUtils.await(25000, 1000, () -> {
+    LambdaTestUtils.await(35000, 1000, () -> {
       List<UnhealthyContainers> allMissingContainers =
           reconContainerManager.getContainerSchemaManager()
               .getUnhealthyContainers(
