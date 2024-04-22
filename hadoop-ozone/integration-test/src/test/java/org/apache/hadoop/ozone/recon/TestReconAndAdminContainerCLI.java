@@ -119,9 +119,9 @@ class TestReconAndAdminContainerCLI {
   private static Stream<Arguments> outOfServiceNodeStateArgs() {
     return Stream.of(
         Arguments.of(NodeOperationalState.DECOMMISSIONING,
-            NodeOperationalState.DECOMMISSIONED, false)
+            NodeOperationalState.DECOMMISSIONED, false),
         Arguments.of(NodeOperationalState.ENTERING_MAINTENANCE,
-            NodeOperationalState.IN_MAINTENANCE, true),
+            NodeOperationalState.IN_MAINTENANCE, true)
     );
   }
 
