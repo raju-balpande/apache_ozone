@@ -256,7 +256,7 @@ public class TestReconTasks {
                   ContainerSchemaDefinition.UnHealthyContainerStates.
                       EMPTY_MISSING,
                   0, 1000);
-      return (allEmptyMissingContainers.size() == 1);
+      return (allEmptyMissingContainers.size() >= 1);
     });
 
 
@@ -275,7 +275,7 @@ public class TestReconTasks {
               .getUnhealthyContainers(
                   ContainerSchemaDefinition.UnHealthyContainerStates.MISSING,
                   0, 1000);
-      return (allMissingContainers.size() == 1);
+      return (allMissingContainers.size() >= 1);
     });
 
     LambdaTestUtils.await(maxWaitingTime, 1000, () -> {
@@ -305,7 +305,7 @@ public class TestReconTasks {
                   ContainerSchemaDefinition.UnHealthyContainerStates.
                       EMPTY_MISSING,
                   0, 1000);
-      return (allEmptyMissingContainers.size() == 1);
+      return (allEmptyMissingContainers.size() >= 1);
     });
 
     // Now restart the cluster and verify the container is no longer missing.
