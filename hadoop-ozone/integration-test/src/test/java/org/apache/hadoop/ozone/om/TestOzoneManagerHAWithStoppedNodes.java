@@ -474,7 +474,8 @@ public class TestOzoneManagerHAWithStoppedNodes extends TestOzoneManagerHA {
     String leaderOMNodeId = omFailoverProxyProvider.getCurrentProxyOMNodeId();
 
     getCluster().stopOzoneManager(leaderOMNodeId);
-    Thread.sleep(NODE_FAILURE_TIMEOUT * 4);
+    Thread.sleep(NODE_FAILURE_TIMEOUT * 2);
+    cluster.waitForLeaderOM();
     createKeyTest(true); // failover should happen to new node
 
     long numTimesTriedToSameNode = omFailoverProxyProvider.getWaitTime()
@@ -514,6 +515,7 @@ public class TestOzoneManagerHAWithStoppedNodes extends TestOzoneManagerHA {
     // Get old leader's metrics
     OMHAMetrics omhaMetrics = oldLeader.getOmhaMetrics();
 
+    // RRR
     assertEquals(newState,
         omhaMetrics.getOmhaInfoOzoneManagerHALeaderState());
 
