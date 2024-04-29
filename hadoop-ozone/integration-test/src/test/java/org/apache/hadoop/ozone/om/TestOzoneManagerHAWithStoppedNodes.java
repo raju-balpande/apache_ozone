@@ -475,7 +475,7 @@ public class TestOzoneManagerHAWithStoppedNodes extends TestOzoneManagerHA {
 
     getCluster().stopOzoneManager(leaderOMNodeId);
     Thread.sleep(NODE_FAILURE_TIMEOUT * 2);
-    cluster.waitForLeaderOM();
+    getCluster().waitForLeaderOM();
     createKeyTest(true); // failover should happen to new node
 
     long numTimesTriedToSameNode = omFailoverProxyProvider.getWaitTime()
