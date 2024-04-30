@@ -516,6 +516,10 @@ public class TestOzoneManagerHAWithStoppedNodes extends TestOzoneManagerHA {
     OMHAMetrics omhaMetrics = oldLeader.getOmhaMetrics();
 
     // RRR
+    GenericTestUtils.waitFor(() -> {
+          return (newState ==
+              omhaMetrics.getOmhaInfoOzoneManagerHALeaderState()) ;
+    }, 1000, 20000);
     assertEquals(newState,
         omhaMetrics.getOmhaInfoOzoneManagerHALeaderState());
 
