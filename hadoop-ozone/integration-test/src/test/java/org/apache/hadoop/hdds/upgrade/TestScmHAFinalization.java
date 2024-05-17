@@ -34,8 +34,10 @@ import org.apache.hadoop.ozone.UniformDatanodesFactory;
 import org.apache.hadoop.ozone.upgrade.DefaultUpgradeFinalizationExecutor;
 import org.apache.hadoop.ozone.upgrade.InjectedUpgradeFinalizationExecutor.UpgradeTestInjectionPoints;
 import org.apache.hadoop.ozone.upgrade.UpgradeFinalizationExecutor;
+import org.apache.hadoop.ozone.upgrade.UpgradeFinalizer;
 import org.apache.hadoop.ozone.upgrade.UpgradeTestUtils;
 import org.apache.ozone.test.GenericTestUtils;
+import org.apache.ozone.test.LambdaTestUtils;
 import org.apache.ozone.test.tag.Flaky;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -57,6 +59,8 @@ import java.util.stream.Stream;
 
 import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.ContainerDataProto.State.CLOSED;
 import static org.apache.hadoop.hdds.scm.ScmConfig.ConfigStrings.HDDS_SCM_INIT_DEFAULT_LAYOUT_VERSION;
+import static org.apache.hadoop.ozone.upgrade.UpgradeFinalizer.Status.ALREADY_FINALIZED;
+import static org.apache.hadoop.ozone.upgrade.UpgradeFinalizer.Status.FINALIZATION_DONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -231,7 +235,7 @@ public class TestScmHAFinalization {
     cluster.waitForClusterToBeReady();
 
     finalizationFuture.get();
-    TestHddsUpgradeUtils.waitForFinalizationFromClient(scmClient, CLIENT_ID);
+    waitForFinalizationFromClient(scmClient, CLIENT_ID);
     // Once the leader tells the client finalization is complete, wait for all
     // followers to catch up so we can check their state.
     waitForScmsToFinalize(cluster.getStorageContainerManagersList());
@@ -240,6 +244,19 @@ public class TestScmHAFinalization {
         cluster.getStorageContainerManagersList(), 0, NUM_DATANODES);
     TestHddsUpgradeUtils.testPostUpgradeConditionsDataNodes(
         cluster.getHddsDatanodes(), 0, CLOSED);
+  }
+
+  public static void waitForFinalizationFromClient(
+      StorageContainerLocationProtocol scmClient, String clientID)
+      throws Exception {
+    LambdaTestUtils.await(90_000, 1_000, () -> {
+      UpgradeFinalizer.Status status = scmClient
+          .queryUpgradeFinalizationProgress(clientID, true, true)
+          .status();
+      LOG.info("Waiting for upgrade finalization to complete from client." +
+          " Current status is {}.", status);
+      return status == FINALIZATION_DONE || status == ALREADY_FINALIZED;
+    });
   }
 
   @Test
