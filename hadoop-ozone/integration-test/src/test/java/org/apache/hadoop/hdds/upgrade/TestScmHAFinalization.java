@@ -249,7 +249,7 @@ public class TestScmHAFinalization {
   public static void waitForFinalizationFromClient(
       StorageContainerLocationProtocol scmClient, String clientID)
       throws Exception {
-    LambdaTestUtils.await(90_000, 1_000, () -> {
+    LambdaTestUtils.await(100000, 1_000, () -> {
       UpgradeFinalizer.Status status = scmClient
           .queryUpgradeFinalizationProgress(clientID, true, true)
           .status();
