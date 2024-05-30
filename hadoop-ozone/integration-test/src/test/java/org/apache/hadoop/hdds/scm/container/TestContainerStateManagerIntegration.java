@@ -252,6 +252,7 @@ public class TestContainerStateManagerIntegration {
 
     // make sure pipeline has has numContainerPerOwnerInPipeline number of
     // containers.
+    LOG.error("RRR:"+scm.getPipelineManager().getContainersInPipeline(container1.getPipeline().getId()));
     assertEquals(scm.getPipelineManager()
             .getNumberOfContainers(container1.getPipeline().getId()),
         numContainerPerOwnerInPipeline);
@@ -262,7 +263,7 @@ public class TestContainerStateManagerIntegration {
     for (Long matchedCount : container2MatchedCount.values()) {
       // TODO: #CLUTIL Look at the division of block allocations in different
       // containers.
-      LOG.error("Total allocated block = " + matchedCount);
+      LOG.info("Total allocated block = " + matchedCount);
       assertThat(matchedCount)
           .isLessThanOrEqualTo(numBlockAllocates / container2MatchedCount.size() + threshold)
           .isGreaterThanOrEqualTo(numBlockAllocates / container2MatchedCount.size() - threshold);

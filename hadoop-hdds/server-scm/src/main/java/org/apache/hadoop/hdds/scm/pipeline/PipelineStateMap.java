@@ -111,6 +111,10 @@ class PipelineStateMap {
       throw new InvalidPipelineStateException(format(
           "Cannot add container to pipeline=%s in closed state", pipelineID));
     }
+    if(pipeline2container.get(pipelineID).contains(containerID)){
+      System.out.println("RRRR Duplicate container Id found. Got the problem here.");
+      throw new RuntimeException("RRRR Duplicate container Id found. Got the problem here.");
+    }
     pipeline2container.get(pipelineID).add(containerID);
   }
 
