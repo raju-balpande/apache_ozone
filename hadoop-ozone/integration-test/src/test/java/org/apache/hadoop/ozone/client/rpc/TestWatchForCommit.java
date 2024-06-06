@@ -275,9 +275,17 @@ public class TestWatchForCommit {
       long index = reply.getLogIndex();
       cluster.shutdownHddsDatanode(pipeline.getNodes().get(0));
       cluster.shutdownHddsDatanode(pipeline.getNodes().get(1));
+      cluster.shutdownHddsDatanode(pipeline.getNodes().get(2));
       // emulate closing pipeline when SCM detects DEAD datanodes
       cluster.getStorageContainerManager()
           .getPipelineManager().closePipeline(pipeline, false);
+//      GenericTestUtils.waitFor(() -> pipeline.isClosed(), 1000, 200000);
+
+//      List<Pipeline> pipelineList = new ArrayList<>();
+//      pipelineList.add(pipeline);
+//      if(!pipeline.isClosed()) {
+//          TestHelper.waitForPipelineClose(pipelineList, cluster);
+//      }
       // again write data with more than max buffer limit. This wi
       // just watch for a log index which in not updated in the commitInfo Map
       // as well as there is no logIndex generate in Ratis.
